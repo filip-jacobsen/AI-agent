@@ -31,3 +31,98 @@ YANGWANG U9 Xtreme - 6:59.17
 Xiaomi SU7 Ultra Track Package - 7:04.957
 Rimac Nevera LE Time Attack - 7:05.29
 Porsche Taycan Turbo GT - 7:07.55
+
+
+Hvis vi tager i udgangspunkt i min prompt: - "Who was driving the mustang when it set that time?"
+så arbejde workflowet sådan her:
+- Chat message recieved " 
+action
+sendMessage
+sessionId
+ac038d4070164701a77b4d2512164014
+chatInput
+thank you so much:) who was driving the mustang when it set that time?"
+- action
+loadMemoryVariables
+values
+Output
+1 item
+Human: is the mustang that set that time, road legal? or is it only for racing
+AI:
+[{"total_matches":3,"note":"distance_km is 20.832 (full lap), 20.6 (shortened) or unspecified. Times on different distances are not directly comparable.","results":[{"position":1,"car":"Ford Mustang GTD","category":"sportscar","powertrain":"petrol","driver":"Dirk Müller","date":"March 2026","year":"2026","lap_time":"6:40.83","lap_seconds":400.83,"distance_km":"20.832","list":"street_legal","notes":"Official site lists this run (Mustang GTD Competition) under Prototypes / pre-production, not as a production car."},{"position":2,"car":"Ford Mustang GTD","category":"sportscar","powertrain":"petrol","driver":"Dirk Müller","date":"9 April 2025","year":"2025","lap_time":"6:52.072","lap_seconds":412.072,"distance_km":"20.832","list":"street_legal","notes":"Earlier record; later broken by the 6:40.83 run."},{"position":3,"car":"Ford Mustang GTD","category":"sportscar","powertrain":"petrol","driver":"Dirk Müller","date":"7 August 2024","year":"2024","lap_time":"6:57.685","lap_seconds":417.685,"distance_km":"20.832","list":"street_legal","notes":null}]}]
+
+AI: The Ford Mustang GTD that set the time of 6:57.685 is only for racing, as it is listed under "Prototypes / pre-production" on the official site, not as a production car.
+
+Human: thank you!, the lap time. was it set on the shorter or the longer version of the nordschleife?
+
+AI:
+[{"total_matches":3,"note":"distance_km is 20.832 (full lap), 20.6 (shortened) or unspecified. Times on different distances are not directly comparable.","results":[{"position":1,"car":"Ford Mustang GTD","category":"sportscar","powertrain":"petrol","driver":"Dirk Müller","date":"March 2026","year":"2026","lap_time":"6:40.83","lap_seconds":400.83,"distance_km":"20.832","list":"street_legal","notes":"Official site lists this run (Mustang GTD Competition) under Prototypes / pre-production, not as a production car."},{"position":2,"car":"Ford Mustang GTD","category":"sportscar","powertrain":"petrol","driver":"Dirk Müller","date":"9 April 2025","year":"2025","lap_time":"6:52.072","lap_seconds":412.072,"distance_km":"20.832","list":"street_legal","notes":"Earlier record; later broken by the 6:40.83 run."},{"position":3,"car":"Ford Mustang GTD","category":"sportscar","powertrain":"petrol","driver":"Dirk Müller","date":"7 August 2024","year":"2024","lap_time":"6:57.685","lap_seconds":417.685,"distance_km":"20.832","list":"street_legal","notes":null}]}]
+
+
+AI: The lap time of 6:57.685 was set on the full 20.832 km lap of the Nordschleife, not the shorter 20.6 km lap.
+
+- car_contains
+Ford Mustang GTD
+driver
+Dirk Müller
+limit
+5
+order
+fastest
+types
+any
+
+Output
+1 item
+total_matches
+note
+results
+3	distance_km is 20.832 (full lap), 20.6 (shortened) or unspecified. Times on different distances are not directly comparable.	
+0
+position:1
+car:Ford Mustang GTD
+category:sportscar
+powertrain:petrol
+driver:Dirk Müller
+date:March 2026
+year:2026
+lap_time:6:40.83
+lap_seconds:400.83
+distance_km:20.832
+list:street_legal
+notes:Official site lists this run (Mustang GTD Competition) under Prototypes / pre-production, not as a production car.
+1
+position:2
+car:Ford Mustang GTD
+category:sportscar
+powertrain:petrol
+driver:Dirk Müller
+date:9 April 2025
+year:2025
+lap_time:6:52.072
+lap_seconds:412.072
+distance_km:20.832
+list:street_legal
+notes:Earlier record; later broken by the 6:40.83 run.
+2
+position:3
+car:Ford Mustang GTD
+category:sportscar
+powertrain:petrol
+driver:Dirk Müller
+date:7 August 2024
+year:2024
+lap_time:6:57.685
+lap_seconds:417.685
+distance_km:20.832
+list:street_legal
+notes:null
+
+- System: You answer questions about Nürburgring Nordschleife lap times.\n\nRULES:\n- For every question about lap times, cars, drivers, years or categories, ALWAYS call the lap time lookup tool first.\n- Answer ONLY from the tool results. Never use your own knowledge for lap times, drivers, dates or rankings.\n- You MAY use general knowledge only to decide what to search for. For example, if the user asks about Japanese cars, put the brands (honda, toyota, lexus, nissan, subaru) in car_contains, or pass "Japanese". Never put a nationality or a driver in the wrong field.\n- If the tool returns no results, say you don't have that data. Do not invent anything.\n- If a question is unrelated to Nürburgring lap times, politely say you can only help with that.\n- Never change numbers. Quote lap_time exactly as returned.\n- Never guess a year. Only fill year if the user literally typed one. For "what year was X tested?", leave year as any and read the year from the results. Do not reuse years from earlier answers.\n\nTOOL USAGE:\n- Fill in ONLY the filters the user explicitly mentioned. Leave everything else as "any".\n- A car brand or model (Lamborghini, Taycan, Civic) goes in car_contains. NEVER in driver or types.\n- Body types / powertrains (electric, hybrid, sedan, suv, sportscar, supercar, hypercar) go in types. Several can be comma-separated.\n- To compare categories (e.g. "is an electric car faster than a hypercar?"), leave types empty and read the category column in the results.\n- For "which driver has the most records", set count_by to driver.\n- limit is a number only. Default 5.\n- Mention if a time was set on the shorter 20.6 km lap or the distance is unspecified.\n\n- Only fill types if the user literally names a body type or powertrain. If they name a brand (Lamborghini, Porsche, Ford), use car_contains only and leave types as any.\n\n- For "is X faster than Y?" questions, call the tool ONCE with BOTH cars in car_contains, comma-separated (e.g. "Ferrari, Aventador"). Never use a time from earlier in the chat.\n- If the result has a verdict, repeat that verdict. It is already correct.\n- To compare times yourself, compare lap_seconds as numbers: LOWER is FASTER. 7:00 is slower than 6:49.\n- If the two times were set on different distances (20.832 vs 20.6 km), say so, because the 20.6 km lap is about 4.5 seconds quicker.\n- Use only the verdict sentence from the tool. Never write a gap like "0.00 seconds". If the verdict says the search matched only one car, call the tool again with two different car names.\n- If a car name includes "MR" or a Manthey kit, say it is the Manthey Racing tuned version, not the standard car.\n- In comparisons, mention if either time has distance_km "unspecified" or 20.6, because those aren't directly comparable with a full 20.832 km lap.\n- If no rows match, say so and suggest one similar car from the same brand only if the tool has returned it. Never invent times.\nHuman: is the mustang that set that time, road legal? or is it only for racing\nAI: [{"id":"b3d46108-c73f-4942-8217-bb547827525c","name":"Call_My_Sub-Workflow_1_","args":{"car_contains":"Ford Mustang GTD","driver":"","limit":"5","order":"fastest","types":"street_legal","id":"b3d46108-c73f-4942-8217-bb547827525c"},"type":"tool_call"}]\nTool: Call_My_Sub-Workflow_1_, [{"total_matches":3,"note":"distance_km is 20.832 (full lap), 20.6 (shortened) or unspecified. Times on different distances are not directly comparable.","results":[{"position":1,"car":"Ford Mustang GTD","category":"sportscar","powertrain":"petrol","driver":"Dirk Müller","date":"March 2026","year":"2026","lap_time":"6:40.83","lap_seconds":400.83,"distance_km":"20.832","list":"street_legal","notes":"Official site lists this run (Mustang GTD Competition) under Prototypes / pre-production, not as a production car."},{"position":2,"car":"Ford Mustang GTD","category":"sportscar","powertrain":"petrol","driver":"Dirk Müller","date":"9 April 2025","year":"2025","lap_time":"6:52.072","lap_seconds":412.072,"distance_km":"20.832","list":"street_legal","notes":"Earlier record; later broken by the 6:40.83 run."},{"position":3,"car":"Ford Mustang GTD","category":"sportscar","powertrain":"petrol","driver":"Dirk Müller","date":"7 August 2024","year":"2024","lap_time":"6:57.685","lap_seconds":417.685,"distance_km":"20.832","list":"street_legal","notes":null}]}]\nAI: The Ford Mustang GTD that set the time of 6:57.685 is only for racing, as it is listed under "Prototypes / pre-production" on the official site, not as a production car.\nHuman: thank you!, the lap time. was it set on the shorter or the longer version of the nordschleife?\nAI: [{"id":"aa81e5df-4555-4cab-9b66-c81fe39365f4","name":"Call_My_Sub-Workflow_1_","args":{"types":"any","limit":"5","order":"fastest","car_contains":"Ford Mustang GTD","id":"aa81e5df-4555-4cab-9b66-c81fe39365f4"},"type":"tool_call"}]\nTool: Call_My_Sub-Workflow_1_, [{"total_matches":3,"note":"distance_km is 20.832 (full lap), 20.6 (shortened) or unspecified. Times on different distances are not directly comparable.","results":[{"position":1,"car":"Ford Mustang GTD","category":"sportscar","powertrain":"petrol","driver":"Dirk Müller","date":"March 2026","year":"2026","lap_time":"6:40.83","lap_seconds":400.83,"distance_km":"20.832","list":"street_legal","notes":"Official site lists this run (Mustang GTD Competition) under Prototypes / pre-production, not as a production car."},{"position":2,"car":"Ford Mustang GTD","category":"sportscar","powertrain":"petrol","driver":"Dirk Müller","date":"9 April 2025","year":"2025","lap_time":"6:52.072","lap_seconds":412.072,"distance_km":"20.832","list":"street_legal","notes":"Earlier record; later broken by the 6:40.83 run."},{"position":3,"car":"Ford Mustang GTD","category":"sportscar","powertrain":"petrol","driver":"Dirk Müller","date":"7 August 2024","year":"2024","lap_time":"6:57.685","lap_seconds":417.685,"distance_km":"20.832","list":"street_legal","notes":null}]}]\nAI: The lap time of 6:57.685 was set on the full 20.832 km lap of the Nordschleife, not the shorter 20.6 km lap.\nHuman: thank you so much:) who was driving the mustang when it set that time?\nAI: [{"id":"32c24e64-e5ba-44ac-969a-97763f497deb","name":"Call_My_Sub-Workflow_1_","args":{"car_contains":"Ford Mustang GTD","driver":"Dirk Müller","limit":"5","order":"fastest","types":"any","id":"32c24e64-e5ba-44ac-969a-97763f497deb"},"type":"tool_call"}]\nTool: [{"total_matches":3,"note":"distance_km is 20.832 (full lap), 20.6 (shortened) or unspecified. Times on different distances are not directly comparable.","results":[{"position":1,"car":"Ford Mustang GTD","category":"sportscar","powertrain":"petrol","driver":"Dirk Müller","date":"March 2026","year":"2026","lap_time":"6:40.83","lap_seconds":400.83,"distance_km":"20.832","list":"street_legal","notes":"Official site lists this run (Mustang GTD Competition) under Prototypes / pre-production, not as a production car."},{"position":2,"car":"Ford Mustang GTD","category":"sportscar","powertrain":"petrol","driver":"Dirk Müller","date":"9 April 2025","year":"2025","lap_time":"6:52.072","lap_seconds":412.072,"distance_km":"20.832","list":"street_legal","notes":"Earlier record; later broken by the 6:40.83 run."},{"position":3,"car":"Ford Mustang GTD","category":"sportscar","powertrain":"petrol","driver":"Dirk Müller","date":"7 August 2024","year":"2024","lap_time":"6:57.685","lap_seconds":417.685,"distance_km":"20.832","list":"street_legal","notes":null}]}]
+Output
+1 item
+Dirk Müller was driving the Ford Mustang GTD when it set the time of 6:57.685 on the Nordschleife.
+
+result = correct.
+
+
