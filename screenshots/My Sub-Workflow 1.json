@@ -1,0 +1,159 @@
+{
+  "name": "My Sub-Workflow 1",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "category"
+            },
+            {
+              "name": "powertrain"
+            },
+            {
+              "name": "year"
+            },
+            {
+              "name": "list"
+            },
+            {
+              "name": "car_contains"
+            },
+            {
+              "name": "driver"
+            },
+            {
+              "name": "full_lap_only"
+            },
+            {
+              "name": "order"
+            },
+            {
+              "name": "limit"
+            }
+          ]
+        }
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        272,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "RNijWKXSweNNJQlj",
+          "mode": "list",
+          "cachedResultName": "Nurburgring lap times",
+          "cachedResultUrl": "/projects/83PTGKPEUYhu0u72/datatables/RNijWKXSweNNJQlj"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        528,
+        352
+      ],
+      "id": "0e3637b5-ebef-4cb7-8969-dc7d0bd960a1",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $('When Executed by Another Workflow').first().json;\nconst rows = $input.all().map(i => i.json);\n\nconst norm = v => (v ?? '').toString().trim().toLowerCase();\nconst EMPTY = ['', 'null', 'none', 'any', 'all', 'n/a', 'undefined'];\nconst terms = v => norm(v).split(/[,;|]/).map(s => s.trim()).filter(s => s && !EMPTY.includes(s));\n\nconst GENERIC = ['production','production car','production cars','car','cars','vehicle',\n  'vehicles','fastest','road legal','street legal','street-legal','nurburgring','nürburgring'];\nconst alias = { ev:'electric', evs:'electric', electrics:'electric', 'electric car':'electric',\n  'electric cars':'electric', 'sports car':'sportscar', 'sports cars':'sportscar',\n  sportscars:'sportscar', 'super car':'supercar', 'super cars':'supercar', supercars:'supercar',\n  hypercars:'hypercar', sedans:'sedan', suvs:'suv', hybrids:'hybrid', 'track cars':'track car',\n  prototypes:'prototype' };\n\nlet typeTerms = [...terms(p.category), ...terms(p.powertrain), ...terms(p.list)]\n  .map(t => alias[t] ?? t).filter(t => !GENERIC.includes(t));\nconst wantProto = typeTerms.includes('prototype');\ntypeTerms = typeTerms.filter(t => t !== 'prototype');\n// Country / region -> brands (so \"Japanese\" works even though the table has no country column)\nconst COUNTRIES = {};\nconst addGroup = (names, brands) => names.forEach(n => COUNTRIES[n] = brands);\naddGroup(['japanese', 'japan'], ['honda', 'toyota', 'lexus', 'nissan', 'subaru', 'mazda', 'mitsubishi', 'acura', 'infiniti']);\naddGroup(['italian', 'italy'], ['ferrari', 'lamborghini', 'maserati', 'pagani', 'alfa romeo']);\naddGroup(['german', 'germany'], ['porsche', 'mercedes', 'bmw', 'audi', 'volkswagen', 'alpina', 'ruf', 'gumpert', 'opel']);\naddGroup(['american', 'usa', 'us', 'america'], ['chevrolet', 'ford', 'dodge', 'tesla', 'cadillac']);\naddGroup(['british', 'uk', 'english', 'britain'], ['mclaren', 'aston martin', 'jaguar', 'lotus', 'radical', 'mini']);\naddGroup(['korean', 'south korean', 'korea'], ['hyundai', 'kia', 'genesis']);\naddGroup(['chinese', 'china'], ['xiaomi', 'yangwang', 'lynk', 'nio', 'byd']);\naddGroup(['french', 'france'], ['renault', 'bugatti', 'alpine', 'peugeot']);\naddGroup(['swedish', 'sweden'], ['koenigsegg', 'volvo', 'polestar']);\n\nconst rawCarTerms = terms(p.car_contains).filter(t => !GENERIC.includes(t));\nconst expanded = rawCarTerms.some(t => COUNTRIES[t]);\nconst carTerms = rawCarTerms.flatMap(t => COUNTRIES[t] ?? [t]);\nconst driverTerms = terms(p.driver);\nconst yearTerms = terms(p.year);\n\nconst m = String(p.limit ?? '').match(/\\d+/);\nconst limit = Math.min(Math.max(m ? parseInt(m[0]) : 5, 1), 25);\nconst slowest = norm(p.order).includes('slow');\n\nlet out = rows.filter(r => norm(r.track) === 'nordschleife' && norm(r.list) !== 'autonomous');\nconst isProto = r => norm(r.list) === 'prototype';\nif (!wantProto) out = out.filter(r => !isProto(r));\nif (wantProto && !typeTerms.length) out = out.filter(isProto);\n\nif (carTerms.length)    out = out.filter(r => carTerms.some(t => norm(r.car).includes(t)));\nif (driverTerms.length) out = out.filter(r => driverTerms.some(t => norm(r.driver).includes(t)));\nlet yearNote = '';\nif (yearTerms.length) {\n  const y = out.filter(r => yearTerms.includes(norm(r.year)));\n  const otherFilters = carTerms.length || driverTerms.length || typeTerms.length;\n  if (y.length || !otherFilters) out = y;   // year-only questions stay strict\n  else yearNote = 'The year filter (' + yearTerms.join(', ') + ') matched nothing for these cars, so it was ignored.';\n}\n\n// Type filter is \"soft\": if it would leave nothing, ignore it\nlet typeNote = '';\nif (typeTerms.length) {\n  const typed = out.filter(r => typeTerms.some(t => [r.category, r.powertrain, r.list].map(norm).includes(t)));\n  if (typed.length) out = typed;\n  else typeNote = 'The type filter (' + typeTerms.join(', ') + ') matched nothing, so it was ignored.';\n}\n\nout.sort((a, b) => slowest\n  ? Number(b.lap_seconds) - Number(a.lap_seconds)\n  : Number(a.lap_seconds) - Number(b.lap_seconds));\n\nif (norm(p.count_by) === 'driver') {\n  const counts = {};\n  for (const r of out) {\n    const d = (r.driver || '').trim();\n    if (d && d !== '—') counts[d] = (counts[d] || 0) + 1;\n  }\n  const ranking = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, limit)\n    .map(([driver, records]) => ({ driver, records }));\n  return [{ json: { total_matches: out.length, driver_ranking: ranking,\n    note: 'Counts rows in the dataset. Rows with no driver listed are skipped.' } }];\n}\n\n// Fastest row for each car searched (for \"is X faster than Y?\" questions)\nconst byTerm = (carTerms.length > 1  && !expanded) ? carTerms.map(t => {\n  const best = out.find(r => norm(r.car).includes(t));\n  return best\n    ? { search: t, car: best.car, lap_time: best.lap_time,\n        lap_seconds: Number(best.lap_seconds), distance_km: best.distance_km }\n    : { search: t, car: null };\n}) : null;\n\nlet verdict = '';\nif (byTerm && new Set(byTerm.filter(x => x.car).map(x => x.car)).size < 2)\n  verdict = 'The search words matched only one car. Search again with two different car names.';\nif (byTerm) {\n  const found = byTerm.filter(x => x.car).sort((a, b) => a.lap_seconds - b.lap_seconds);\n  if (found.length > 1 && found[0].car !== found[1].car) {\n    const gap = (found[1].lap_seconds - found[0].lap_seconds).toFixed(2);\n    verdict = `${found[0].car} (${found[0].lap_time}) is FASTER than ${found[1].car} (${found[1].lap_time}) by ${gap} seconds. Lower lap_seconds is faster.`;\n  }\n}\n\nreturn [{ json: {\n  total_matches: out.length,\n  ...(verdict ? { verdict, best_per_car_term: byTerm } : {}),\n  note: (typeNote + ' ' + yearNote + ' ' + (out.length\n    ? 'distance_km is 20.832 (full lap), 20.6 (shortened) or unspecified. Times on different distances are not directly comparable.'\n    : 'No rows matched these filters.')).trim(),\n  results: out.slice(0, limit).map((r, i) => ({\n    position: i + 1, car: r.car, category: r.category, powertrain: r.powertrain,\n    driver: r.driver, date: r.date, year: r.year, lap_time: r.lap_time,\n    lap_seconds: r.lap_seconds, distance_km: r.distance_km, list: r.list, notes: r.notes\n  }))\n}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        352
+      ],
+      "id": "4fd3ff83-f7ef-49c2-8903-98afe6cf991e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "content": "dette \"sub\" workflow bliver triggerd af mit store workflow gennem agenten\n",
+        "height": 80
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        192,
+        512
+      ],
+      "typeVersion": 1,
+      "id": "04df0345-718e-4015-95fd-31ef502b4cae",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "denne node henter alt dataen fra mit data_tabel som jeg har i N8N. samt formateret det til JSON, laver rækker, kolonner osv"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        464,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "247d7cc7-fe3d-4b61-9e68-cb0309693705",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "i den sidste note skriver jeg alt javaScript kode som skal bruges til at kunne diagere AI Agenten til at den kan fuldføre arbejde korrekt"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        688,
+        512
+      ],
+      "typeVersion": 1,
+      "id": "5671a57e-57da-4626-8ed0-32095cd3ea3c",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "02bcfd84-5fd2-410d-84b1-666449b2f7d7",
+  "meta": {
+    "instanceId": "85a7bd7e1a51927a994630f57ef3a0cb602a5b236b5537edd871c8715309e507"
+  },
+  "nodeGroups": [],
+  "id": "QN5uO3eS714tPIEI",
+  "tags": []
+}

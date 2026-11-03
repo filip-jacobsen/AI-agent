@@ -1,0 +1,333 @@
+{
+  "name": "Data import",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        464,
+        0
+      ],
+      "id": "7e53a85d-5773-4bb2-af80-e978ffc55469",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "RNijWKXSweNNJQlj",
+          "mode": "list",
+          "cachedResultName": "Nurburgring lap times",
+          "cachedResultUrl": "/projects/83PTGKPEUYhu0u72/datatables/RNijWKXSweNNJQlj"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "list",
+              "displayName": "list",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "rank",
+              "displayName": "rank",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "car",
+              "displayName": "car",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "powertrain",
+              "displayName": "powertrain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "driver",
+              "displayName": "driver",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "year",
+              "displayName": "year",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "track",
+              "displayName": "track",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "lap_time",
+              "displayName": "lap_time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "alt_lap_time_20_6km",
+              "displayName": "alt_lap_time_20_6km",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "alt_lap_seconds_20_6km",
+              "displayName": "alt_lap_seconds_20_6km",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "official_segment",
+              "displayName": "official_segment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "lap_seconds",
+              "displayName": "lap_seconds",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "distance_km",
+              "displayName": "distance_km",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        0
+      ],
+      "id": "5d5b8d76-b77e-4563-a1de-3e08bc7cac20",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "formTitle": "Nurburgring Nordschleife Track Records",
+        "formDescription": "this is a big list of all approved lap times made by many different car manufacturers",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "lap times",
+              "fieldType": "file",
+              "fieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        64,
+        0
+      ],
+      "id": "dcbee054-58aa-4eaa-9e57-43f90395b6e8",
+      "name": "On form submission",
+      "webhookId": "fdfdc84a-6d0f-42ee-9788-1794b960e7ba"
+    },
+    {
+      "parameters": {
+        "content": "denne workflow er ikke published som de andre fordi det er her hvor alt information kommer fra, hver gang du kører den bliver data tilføjet til tabel, så det skal helst ligge private så andre ikke kan ændre på det",
+        "height": 144,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        896,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "ba6fbd52-61b7-4e91-98ca-f5230270e8fa",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "det her er ikke det samme som Get_Rows i sub workflow, fordi her udfylder den alle rækkerne og collums, i den anden skal man hente"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        640,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "c75c57d1-f4a5-46d6-8762-7df0d2d91e58",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "siden vi giver en CSV fill (Comma separate value file) skal vi omdanne det til raw JSON så vi kan arbejde med det."
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        368,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "5806cb60-f183-432c-9086-879eb276224d",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "når denne workflow sættes i gang åbner et vindue op hvor du kan load en fil, denne fil har alt data til tabelen som vi skal bruge i de andre workflows"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "2b16b358-49ab-4625-a662-b21448d76632",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "4d1d78d0-318d-4503-9c0f-a5ed7a10e953",
+  "meta": {
+    "instanceId": "85a7bd7e1a51927a994630f57ef3a0cb602a5b236b5537edd871c8715309e507"
+  },
+  "nodeGroups": [],
+  "id": "xTcSDTRG3NXzsP6D",
+  "tags": []
+}
