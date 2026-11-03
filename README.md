@@ -3,7 +3,7 @@ obligatorisk opgave til AI agenter og automatisering
 
 Hej Lasse! dette er mit projekt som jeg har arbejdet på de seneste 2 uger. projektet virker sådan her:
 
-![workflow 1](workflow1.png)
+![workflow 1](screenshots/workflow1.png)
 
 dette er et billede af mit hoved workflow i N8N. workflow har en trigger "When chat message recieved" dette er vigtigt fordi at vi arbejder med en Ai-chatbot. derfor starter workflow når at en bruger har sendt en besked til chatbot.
 
@@ -13,11 +13,11 @@ det der sker er følgende:
 3. ai agent laver et simple Memory kald, "loadMemoryVariables", som tjekker historien af dine beskeder med chatbotten
 4. Ai agenten derefter kalder selve chat- modellen, som i dette projekt er Ollama (self hosted gennem docker desktop)
 5. derefter er der blevet tilføjet et tool til Ai-agenten som hedder call "My Sub-workflow 1". dette er en separat worflow i N8N som ser sådan her ud:
-   ![subworkflow 1](subworkflow.png)
+   ![subworkflow 1](screenshots/subworkflow.png)
 
 6. her kan vi se at trigger for at starte dette workflow er " When executed by another workflow". dette betyder at workflow kun starter når at den er blevet kaldt udefra, nemlig min Main workflow.
 7. her kalder den først på "Get rows" som henter alle rows fra min Data-tabel 'Nurburgring lap times', det ser sådan her ud:
-   ![get Row action](N8N_data_import.png)
+   ![get Row action](screenshots/N8N_data_import.png)
 
 8. den data den henter kan findes ikke i et workflow, men en data tabel, som har alt i alt 18 kolloner med information, såsom lap time, model navn, krøer som fulførte tiden, året testet skete, distance på banen osv.
 9. når alt dataen er hentet kører subworkflowet videre til et 'Code in Javascript node', her er alt koden som skal bruges til at min ollama chatbot kan samle den korekte information ind. såsom at sammenligne brugeresn tekst men data fra tabelen, og tag de korrekte informationer fra den, som den kan sende tilbage som svar til brugeren.
