@@ -1,0 +1,33 @@
+USER Promt 1: which car is the fastes around the nurbugrging?
+
+OLLAMA: The fastest car around the Nürburgring is the Mercedes-AMG ONE, with a lap time of 6:29.09 on the full 20.832 km lap.
+
+USER promt 2: how long ago did the test take place?
+
+OLLAMA: The test for the Mercedes-AMG ONE took place on September 23, 2024, which is approximately 2 months ago.
+
+USER prompt 3: which car came in second?
+
+OLLAMA: The car that came in second was the Ford Mustang GTD, with a lap time of 6:57.685.
+
+USER prompt 4: is the mustang that set that time, road legal? or is it only for racing
+
+OLLAMA: The Ford Mustang GTD that set the time of 6:57.685 is only for racing, as it is listed under "Prototypes / pre-production" on the official site, not as a production car.
+
+USER prompt 5: thank you!, the lap time. was it set on the shorter or the longer version of the nordschleife?
+
+OLLAMA: The lap time of 6:57.685 was set on the full 20.832 km lap of the Nordschleife, not the shorter 20.6 km lap.
+
+USER prompt 6: thank you so much:) who was driving the mustang when it set that time?
+
+OLLAMA: Dirk Müller was driving the Ford Mustang GTD when it set the time of 6:57.685 on the Nordschleife.
+
+USER prompt 7: change of topic, what are the fastest 5 electric vehicles to set a time on the track?
+
+OLLAMA: The fastest 5 electric vehicles to set a time on the track are:
+
+Porsche Taycan Turbo GT MR - 6:55.53
+YANGWANG U9 Xtreme - 6:59.17
+Xiaomi SU7 Ultra Track Package - 7:04.957
+Rimac Nevera LE Time Attack - 7:05.29
+Porsche Taycan Turbo GT - 7:07.55
